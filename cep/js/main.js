@@ -108,6 +108,23 @@
           ctrl.appendChild(op);
         });
         ctrl.addEventListener("change", onParamChange);
+      } else if (f.type === "combo") {
+        // 可编辑下拉：从预设里选，也可手动敲字/删除改成任意值
+        ctrl = document.createElement("input"); ctrl.type = "text"; ctrl.className = "full";
+        ctrl.value = val == null ? "" : val;
+        ctrl.setAttribute("autocomplete", "off");
+        var dl = document.createElement("datalist");
+        dl.id = "dl_" + f.key + "_" + Math.random().toString(36).slice(2, 8);
+        (f.options || []).forEach(function (o) {
+          var op = document.createElement("option");
+          op.value = o.value;
+          if (o.label && o.label !== o.value) op.label = o.label;
+          dl.appendChild(op);
+        });
+        ctrl.setAttribute("list", dl.id);
+        wrap.appendChild(dl);
+        ctrl.addEventListener("input", onParamChange);
+        ctrl.addEventListener("change", onParamChange);
       } else if (f.type === "range") {
         ctrl = document.createElement("input"); ctrl.type = "range";
         ctrl.min = f.min; ctrl.max = f.max; ctrl.step = f.step; ctrl.value = val; ctrl.className = "full";
