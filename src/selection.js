@@ -86,13 +86,48 @@
       };
     }
     const pix = await imaging.getPixels(opts);
+
+    // JPEG 不支持 alpha：若像素是 4 通道（带 alpha），先剔掉 alpha 转成 RGB 再编码，
+    // 否则带透明的图层会报 "image data with alpha cannot be encoded as jpeg"。
+    let encodeTarget = pix.imageData;
+    let rgbData = null;
+    try {
+      if (pix.imageData.components === 4) {
+        const raw = await pix.imageData.getData();
+        const w2 = pix.imageData.width;
+        const h2 = pix.imageData.height;
+        const rgb = new Uint8Array(w2 * h2 * 3);
+        for (let i = 0, j = 0; j < rgb.length; i += 4, j += 3) {
+          rgb[j] = raw[i];
+          rgb[j + 1] = raw[i + 1];
+          rgb[j + 2] = raw[i + 2];
+        }
+        rgbData = await imaging.createImageDataFromBuffer(rgb, {
+          width: w2,
+          height: h2,
+          components: 3,
+          componentSize: 8,
+          colorSpace: pix.imageData.colorSpace || "RGB",
+          colorProfile: pix.imageData.colorProfile,
+        });
+        encodeTarget = rgbData;
+      }
+    } catch (e) {
+      console.warn("剔离 alpha 失败，按原样编码：", e && e.message);
+    }
+
     const base64 = await imaging.encodeImageData({
-      imageData: pix.imageData,
+      imageData: encodeTarget,
       base64: true,
-      format: "png",
     });
+
     try {
       pix.imageData.dispose();
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      if (rgbData) rgbData.dispose();
     } catch (e) {
       /* ignore */
     }

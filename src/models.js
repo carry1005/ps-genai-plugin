@@ -142,7 +142,7 @@
     const parts = [];
     if (prompt) parts.push({ text: prompt });
     if (imageBase64) {
-      parts.push({ inlineData: { mimeType: "image/png", data: U.stripDataUrl(imageBase64) } });
+      parts.push({ inlineData: { mimeType: "image/jpeg", data: U.stripDataUrl(imageBase64) } });
     }
     if (parts.length === 0) throw new Error("提示词与图片不能同时为空。");
 
@@ -193,7 +193,7 @@
     const form = new FormData();
     form.append("model", model);
     form.append("prompt", prompt || "");
-    form.append("image", U.base64ToBlob(imageBase64, "image/png"), "input.png");
+    form.append("image", U.base64ToBlob(imageBase64, "image/jpeg"), "input.jpg");
     form.append("n", "1");
     if (options.size && options.size !== "auto") form.append("size", options.size);
     if (options.quality && options.quality !== "auto") form.append("quality", options.quality);
@@ -218,7 +218,7 @@
       options.endpoint || "https://api.stability.ai/v2beta/stable-image/generate/core";
     const form = new FormData();
     form.append("prompt", prompt || "");
-    form.append("image", U.base64ToBlob(imageBase64, "image/png"), "input.png");
+    form.append("image", U.base64ToBlob(imageBase64, "image/jpeg"), "input.jpg");
     form.append("mode", "image-to-image");
     form.append("strength", String(options.strength != null ? options.strength : 0.6));
     form.append("output_format", "png");
@@ -248,7 +248,7 @@
     const form = new FormData();
     if (options.model) form.append("model", options.model);
     form.append("prompt", prompt || "");
-    form.append("image", U.base64ToBlob(imageBase64, "image/png"), "input.png");
+    form.append("image", U.base64ToBlob(imageBase64, "image/jpeg"), "input.jpg");
     form.append("n", "1");
 
     const headers = {};
@@ -273,7 +273,7 @@
     const model = (options.model || "wanx2.1-imageedit").trim();
     const func = options.function || "description_edit";
     const auth = "Bearer " + apiKey.trim();
-    const dataUrl = "data:image/png;base64," + U.stripDataUrl(imageBase64);
+    const dataUrl = "data:image/jpeg;base64," + U.stripDataUrl(imageBase64);
 
     // 1) 提交异步任务
     const submit = await apiFetch(
