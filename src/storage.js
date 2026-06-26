@@ -1,41 +1,36 @@
 /*
  * storage.js — 凭据与设置持久化
- *  - API Key：使用 UXP secureStorage 加密存储（按模型隔离），不落明文。
- *  - 普通设置：使用 localStorage 保存上次选择的模型、参数等非敏感项。
+ *  - 全部使用 localStorage：在 UDT 加载、系统 extensions 目录加载等各种方式下都稳定可用。
+ *    （secureStorage 在开发者/手动加载模式下可能不可用，会导致密钥存不进去。）
  */
 (function (root) {
   "use strict";
   const PSAI = (root.PSAI = root.PSAI || {});
 
-  const uxp = require("uxp");
-  const secureStorage = uxp.storage.secureStorage;
   const SETTINGS_KEY = "psai.settings.v1";
 
   function keyName(modelId) {
     return `psai.apikey.${modelId}`;
   }
 
-  /** 保存某模型的 API Key；传空则删除 */
+  /** 保存某模型的 API Key；传空则删除。用 localStorage 保证各种加载方式下都可用。 */
   async function saveApiKey(modelId, key) {
     const name = keyName(modelId);
-    if (!key) {
-      try {
-        await secureStorage.removeItem(name);
-      } catch (e) {
-        /* 不存在则忽略 */
+    try {
+      if (!key) {
+        localStorage.removeItem(name);
+      } else {
+        localStorage.setItem(name, key);
       }
-      return;
+    } catch (e) {
+      throw new Error("无法保存密钥：" + ((e && e.message) || e));
     }
-    await secureStorage.setItem(name, key);
   }
 
   /** 读取某模型的 API Key，返回明文字符串（无则空串） */
   async function getApiKey(modelId) {
     try {
-      const val = await secureStorage.getItem(keyName(modelId));
-      if (!val) return "";
-      // secureStorage 返回 Uint8Array
-      return new TextDecoder().decode(val);
+      return localStorage.getItem(keyName(modelId)) || "";
     } catch (e) {
       return "";
     }
