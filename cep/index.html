@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="header">
+        <h1>AI 生成填充</h1>
+        <p class="sub">框选区域 → 文字描述 → 图生图 → 新图层</p>
+      </div>
+
+      <div class="section">
+        <p class="sec-title">① 模型</p>
+        <select id="modelPicker" class="full"></select>
+        <p class="hint" id="modelHint"></p>
+      </div>
+
+      <div class="section">
+        <p class="sec-title">② API 密钥</p>
+        <input id="apiKey" type="password" class="full" placeholder="粘贴该模型的 API Key" />
+        <div class="row-between">
+          <label class="inline"><input type="checkbox" id="showKey" /> 显示</label>
+          <span class="badge" id="keyBadge">未保存</span>
+        </div>
+        <div class="row">
+          <button id="saveKey" class="btn grow">保存密钥</button>
+          <button id="clearKey" class="btn ghost">清除</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="sec-title">③ 参数</p>
+        <div id="paramContainer"></div>
+      </div>
+
+      <div class="section">
+        <p class="sec-title">④ 提示词</p>
+        <textarea id="prompt" class="full" rows="3" placeholder="描述想对框选区域做的修改，例如：把外套改成红色皮夹克，保留人物姿态"></textarea>
+      </div>
+
+      <div class="section">
+        <div class="collapse-head" id="advHead"><span id="advChevron">▶</span> 高级选项</div>
+        <div class="collapse-body" id="advBody">
+          <label class="lbl">上传最长边(像素, 0=原始)</label>
+          <input id="maxEdge" type="number" value="1024" class="full" />
+          <label class="inline"><input type="checkbox" id="fallbackFull" checked /> 无选区时用整张画布</label>
+          <label class="lbl">新图层命名前缀</label>
+          <input id="layerPrefix" type="text" value="AI" class="full" />
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="progress" id="progress"><div class="bar"></div></div>
+        <div class="status" id="status">初始化中…</div>
+        <div class="row">
+          <button id="generate" class="btn cta grow">生成</button>
+          <button id="cancel" class="btn ghost hidden">取消</button>
+        </div>
+        <p class="hint" id="selInfo"></p>
+      </div>
+    </div>
+
+    <script src="lib/CSInterface.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/models.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
