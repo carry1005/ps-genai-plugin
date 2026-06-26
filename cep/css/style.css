@@ -112,3 +112,22 @@ input[type="range"] { padding: 0; }
 }
 .combo-item { padding: 6px 8px; cursor: pointer; font-size: 12px; color: #e8e8e8; white-space: nowrap; }
 .combo-item:hover { background: #2680eb; color: #fff; }
+
+.ref-thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.ref-thumb {
+  position: relative; width: 72px; height: 72px; border-radius: 6px;
+  border: 1px solid #4a4a4a; overflow: hidden; background: #1e1e1e; cursor: grab;
+}
+.ref-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.ref-thumb.dragging { opacity: 0.4; }
+.ref-thumb.dragover { border-color: #4b8dff; box-shadow: 0 0 0 2px rgba(75, 141, 255, 0.5); }
+.ref-thumb .ref-x {
+  position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; padding: 0;
+  border: none; border-radius: 50%; background: rgba(0, 0, 0, 0.7); color: #fff;
+  font-size: 13px; line-height: 16px; text-align: center; cursor: pointer;
+}
+.ref-thumb .ref-x:hover { background: #e34850; }
+.ref-thumb .ref-label {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6); color: #fff; font-size: 10px; text-align: center; padding: 1px 0;
+}

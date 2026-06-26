@@ -46,7 +46,7 @@
 
   function cacheEls() {
     ["modelPicker", "modelHint", "apiKey", "showKey", "keyBadge", "saveKey", "clearKey",
-      "paramContainer", "prompt", "negPrompt", "addRef", "refInfo", "clearRef",
+      "paramContainer", "prompt", "negPrompt", "addRef", "refInfo", "clearRef", "refThumbs",
       "settingsBtn", "settingsArea", "settingsOverlay", "settingsClose", "maxEdge",
       "fallbackFull", "layerPrefix", "progress", "status", "generate", "cancel", "selInfo"
     ].forEach(function (id) { els[id] = $(id); });
@@ -73,6 +73,65 @@
     els.settingsOverlay.classList.toggle("hidden", !show);
   }
 
+  function guessMimeFromB64(b64) {
+    if (!b64) return "image/png";
+    if (b64.indexOf("/9j/") === 0) return "image/jpeg";
+    if (b64.indexOf("iVBORw0K") === 0) return "image/png";
+    if (b64.indexOf("UklGR") === 0) return "image/webp";
+    if (b64.indexOf("R0lGOD") === 0) return "image/gif";
+    if (b64.indexOf("Qk") === 0) return "image/bmp";
+    return "image/png";
+  }
+
+  var dragRefIndex = -1;
+  function renderRefThumbs() {
+    if (!els.refThumbs) return;
+    els.refThumbs.innerHTML = "";
+    referenceImages.forEach(function (b64, i) {
+      var cell = document.createElement("div");
+      cell.className = "ref-thumb";
+      cell.draggable = true;
+      cell.title = "拖动可调整顺序";
+
+      var img = document.createElement("img");
+      img.src = "data:" + guessMimeFromB64(b64) + ";base64," + b64;
+      cell.appendChild(img);
+
+      var label = document.createElement("span");
+      label.className = "ref-label";
+      label.textContent = "图" + (i + 1);
+      cell.appendChild(label);
+
+      var x = document.createElement("button");
+      x.className = "ref-x";
+      x.textContent = "×";
+      x.title = "删除这张";
+      x.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var n = i + 1;
+        referenceImages.splice(i, 1);
+        updateRefInfo();
+        setStatus("已删除图" + n + "（剩 " + referenceImages.length + " 张）", "ok");
+      });
+      cell.appendChild(x);
+
+      cell.addEventListener("dragstart", function () { dragRefIndex = i; cell.classList.add("dragging"); });
+      cell.addEventListener("dragend", function () { dragRefIndex = -1; cell.classList.remove("dragging"); });
+      cell.addEventListener("dragover", function (e) { e.preventDefault(); cell.classList.add("dragover"); });
+      cell.addEventListener("dragleave", function () { cell.classList.remove("dragover"); });
+      cell.addEventListener("drop", function (e) {
+        e.preventDefault();
+        cell.classList.remove("dragover");
+        if (dragRefIndex < 0 || dragRefIndex === i) return;
+        var moved = referenceImages.splice(dragRefIndex, 1)[0];
+        referenceImages.splice(i, 0, moved);
+        updateRefInfo();
+      });
+
+      els.refThumbs.appendChild(cell);
+    });
+  }
+
   function updateRefInfo() {
     if (referenceImages.length === 0) {
       els.refInfo.textContent = "无参考图";
@@ -81,6 +140,7 @@
       els.refInfo.textContent = referenceImages.length + " 张参考图";
       els.clearRef.classList.remove("hidden");
     }
+    renderRefThumbs();
   }
 
   function buildModelPicker() {
