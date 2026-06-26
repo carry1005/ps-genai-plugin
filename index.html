@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="app-header">
+        <div>
+          <h1 class="app-title">AI 生成填充</h1>
+          <p class="app-subtitle">框选区域 → 文字描述 → 图生图 → 新图层</p>
+        </div>
+      </div>
+
+      <!-- 模型选择 -->
+      <div class="section">
+        <p class="section-title">① 选择模型</p>
+        <sp-picker id="modelPicker" size="s" class="full"></sp-picker>
+        <p class="hint" id="modelHint"></p>
+      </div>
+
+      <!-- API 密钥 -->
+      <div class="section">
+        <p class="section-title">② API 密钥</p>
+        <sp-textfield id="apiKey" type="password" class="full" placeholder="粘贴该模型的 API Key（加密存储）"></sp-textfield>
+        <div class="row-between">
+          <sp-checkbox id="showKey" size="s">显示</sp-checkbox>
+          <span class="badge" id="keyBadge">未保存</span>
+        </div>
+        <div class="field-row">
+          <sp-button id="saveKey" variant="primary" class="grow">保存密钥</sp-button>
+          <sp-button id="clearKey" variant="secondary" quiet class="shrink">清除</sp-button>
+        </div>
+      </div>
+
+      <!-- 模型参数（动态渲染） -->
+      <div class="section">
+        <p class="section-title">③ 参数</p>
+        <div id="paramContainer"></div>
+      </div>
+
+      <!-- 提示词 -->
+      <div class="section">
+        <p class="section-title">④ 提示词（聊天框）</p>
+        <sp-textarea id="prompt" class="full" placeholder="描述你想对框选区域做的修改，例如：把这件外套改成红色皮夹克，保留人物姿态与光照"></sp-textarea>
+        <p class="hint">支持中英文；越具体越好。建议说明“保留什么 / 改变什么”。</p>
+      </div>
+
+      <!-- 高级选项 -->
+      <div class="section">
+        <div class="collapse-head" id="advHead">
+          <span class="chevron" id="advChevron">▶</span>
+          <span class="section-title" style="margin: 0">高级选项</span>
+        </div>
+        <div class="collapse-body" id="advBody">
+          <div class="field">
+            <span class="label">上传最长边（像素，0 = 原始尺寸）</span>
+            <sp-textfield id="maxEdge" type="number" value="1024" class="full"></sp-textfield>
+            <p class="hint">限制上传尺寸以加快速度/降低费用；放回时会无损缩放回原选区大小。</p>
+          </div>
+          <sp-checkbox id="fallbackFull" checked>无选区时改用整张画布</sp-checkbox>
+          <div class="field">
+            <span class="label">新图层命名前缀</span>
+            <sp-textfield id="layerPrefix" value="AI" class="full"></sp-textfield>
+          </div>
+        </div>
+      </div>
+
+      <!-- 执行区 -->
+      <div class="section">
+        <div class="progress-wrap" id="progress"><div class="progress-bar"></div></div>
+        <div class="status" id="status">就绪</div>
+        <div class="field-row">
+          <sp-button id="generate" variant="cta" class="grow">生成</sp-button>
+          <sp-button id="cancel" variant="warning" quiet class="shrink hidden">取消</sp-button>
+        </div>
+        <p class="hint" id="selInfo"></p>
+      </div>
+    </div>
+
+    <!-- 依赖顺序：utils → storage → models → selection → layers → main -->
+    <script src="src/utils.js"></script>
+    <script src="src/storage.js"></script>
+    <script src="src/models.js"></script>
+    <script src="src/selection.js"></script>
+    <script src="src/layers.js"></script>
+    <script src="src/main.js"></script>
+  </body>
+</html>

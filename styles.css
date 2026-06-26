@@ -1,0 +1,243 @@
+/* styles.css — 面板布局样式。配色尽量跟随 Photoshop 深色主题（使用 spectrum 变量回退）。 */
+
+:root {
+  --gap: 10px;
+  --radius: 6px;
+  --muted: #9a9a9a;
+  --border: rgba(255, 255, 255, 0.12);
+  --panel-bg: transparent;
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --danger: #e34850;
+  --ok: #2d9d78;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: 12px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.app-subtitle {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 2px 0 0;
+}
+
+.section {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.field-row > * {
+  flex: 1 1 auto;
+}
+
+.field-row .grow {
+  flex: 1 1 auto;
+}
+
+.field-row .shrink {
+  flex: 0 0 auto;
+}
+
+.label {
+  font-size: 11px;
+  color: #cfcfcf;
+}
+
+.hint {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* 状态条 */
+.status {
+  font-size: 11px;
+  min-height: 16px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status.error {
+  color: var(--danger);
+}
+
+.status.ok {
+  color: var(--ok);
+}
+
+/* 进度条 */
+.progress-wrap {
+  height: 4px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  display: none;
+}
+
+.progress-wrap.active {
+  display: block;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 30%;
+  background: #4b8dff;
+  border-radius: 2px;
+  animation: indeterminate 1.2s ease-in-out infinite;
+}
+
+@keyframes indeterminate {
+  0% { margin-left: -30%; }
+  100% { margin-left: 100%; }
+}
+
+/* 徽标 */
+.badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.badge.ok {
+  color: var(--ok);
+  border-color: rgba(45, 157, 120, 0.5);
+}
+
+.badge.warn {
+  color: #e6a700;
+  border-color: rgba(230, 167, 0, 0.5);
+}
+
+/* 折叠区 */
+.collapse-head {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.collapse-body {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.collapse-body.open {
+  display: flex;
+}
+
+.chevron {
+  transition: transform 0.15s ease;
+}
+
+.chevron.open {
+  transform: rotate(90deg);
+}
+
+textarea,
+sp-textarea {
+  width: 100%;
+  min-height: 64px;
+  resize: vertical;
+}
+
+.full {
+  width: 100%;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.danger-text {
+  color: var(--danger);
+}
+
+.small {
+  font-size: 10px;
+}
+
+.hidden {
+  display: none !important;
+}
