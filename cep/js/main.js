@@ -46,7 +46,7 @@
 
   function cacheEls() {
     ["modelPicker", "modelHint", "apiKey", "showKey", "keyBadge", "saveKey", "clearKey",
-      "paramContainer", "prompt", "cnInput", "addRef", "refInfo", "clearRef",
+      "paramContainer", "prompt", "addRef", "refInfo", "clearRef",
       "settingsBtn", "settingsArea", "advHead", "advChevron", "advBody", "maxEdge",
       "fallbackFull", "layerPrefix", "progress", "status", "generate", "cancel", "selInfo"
     ].forEach(function (id) { els[id] = $(id); });
@@ -328,7 +328,6 @@
     els.fallbackFull.addEventListener("change", function () {
       PSAI.storage.saveSettings({ fallbackFull: !!els.fallbackFull.checked });
     });
-    if (els.cnInput) els.cnInput.addEventListener("click", openPromptDialog);
     if (els.prompt) els.prompt.addEventListener("click", openPromptDialog);
     if (els.settingsBtn) els.settingsBtn.addEventListener("click", function () { toggleSettings(); });
     if (els.addRef) els.addRef.addEventListener("click", function () {
