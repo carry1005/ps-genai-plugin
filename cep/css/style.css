@@ -78,10 +78,25 @@ input[type="range"] { padding: 0; }
 .collapse-body.open { display: flex; }
 .hidden { display: none !important; }
 
-.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.header { display: flex; flex-direction: column; gap: 4px; }
+.subrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .icon-btn { background: transparent; border: 1px solid #5a5a5a; color: #d0d0d0; border-radius: 5px; width: 30px; height: 28px; cursor: pointer; font-size: 15px; flex: 0 0 auto; }
 .icon-btn:hover { background: rgba(255, 255, 255, 0.08); }
 #settingsArea { display: flex; flex-direction: column; gap: 10px; }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55);
+  display: flex; align-items: flex-start; justify-content: center;
+  z-index: 100; padding: 14px; overflow-y: auto;
+}
+.modal-box {
+  background: #2d2d2d; border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px; width: 100%; max-width: 460px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  display: flex; flex-direction: column; gap: 10px; padding: 12px;
+}
+.modal-head { display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 13px; font-weight: 700; color: #e8e8e8; }
 
 .combo { position: relative; }
 .combo > input { width: 100%; padding-right: 26px; }

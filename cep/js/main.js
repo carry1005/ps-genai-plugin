@@ -47,7 +47,7 @@
   function cacheEls() {
     ["modelPicker", "modelHint", "apiKey", "showKey", "keyBadge", "saveKey", "clearKey",
       "paramContainer", "prompt", "addRef", "refInfo", "clearRef",
-      "settingsBtn", "settingsArea", "advHead", "advChevron", "advBody", "maxEdge",
+      "settingsBtn", "settingsArea", "settingsOverlay", "settingsClose", "advHead", "advChevron", "advBody", "maxEdge",
       "fallbackFull", "layerPrefix", "progress", "status", "generate", "cancel", "selInfo"
     ].forEach(function (id) { els[id] = $(id); });
   }
@@ -68,9 +68,9 @@
   }
 
   function toggleSettings(open) {
-    var show = open == null ? els.settingsArea.classList.contains("hidden") : open;
-    els.settingsArea.classList.toggle("hidden", !show);
-    PSAI.storage.saveSettings({ settingsOpen: show });
+    if (!els.settingsOverlay) return;
+    var show = open == null ? els.settingsOverlay.classList.contains("hidden") : open;
+    els.settingsOverlay.classList.toggle("hidden", !show);
   }
 
   function updateRefInfo() {
@@ -329,7 +329,11 @@
       PSAI.storage.saveSettings({ fallbackFull: !!els.fallbackFull.checked });
     });
     if (els.prompt) els.prompt.addEventListener("click", openPromptDialog);
-    if (els.settingsBtn) els.settingsBtn.addEventListener("click", function () { toggleSettings(); });
+    if (els.settingsBtn) els.settingsBtn.addEventListener("click", function () { toggleSettings(true); });
+    if (els.settingsClose) els.settingsClose.addEventListener("click", function () { toggleSettings(false); });
+    if (els.settingsOverlay) els.settingsOverlay.addEventListener("click", function (e) {
+      if (e.target === els.settingsOverlay) toggleSettings(false);
+    });
     if (els.addRef) els.addRef.addEventListener("click", function () {
       if (!fs) { setStatus("Node 不可用，无法读取参考图。", "error"); return; }
       jsxCall("psaiPickImage", []).then(function (r) {
@@ -361,7 +365,6 @@
       if (s.maxEdge != null) els.maxEdge.value = s.maxEdge;
       if (s.layerPrefix) els.layerPrefix.value = s.layerPrefix;
       if (s.fallbackFull != null) els.fallbackFull.checked = !!s.fallbackFull;
-      toggleSettings(s.settingsOpen === true);
       updateRefInfo();
       var first = (s.lastModel && PSAI.models.getById(s.lastModel)) ? s.lastModel : PSAI.models.list[0].id;
       els.modelPicker.value = first;

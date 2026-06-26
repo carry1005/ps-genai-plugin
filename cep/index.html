@@ -7,14 +7,20 @@
   <body>
     <div class="app">
       <div class="header">
-        <div>
-          <h1>AI 生成填充</h1>
-          <p class="sub">框选区域 → 文字描述 → 图生图 → 新图层</p>
+        <h1>AI 生成填充</h1>
+        <div class="subrow">
+          <p class="sub">AI修图插件byCarry</p>
+          <button id="settingsBtn" class="icon-btn" title="模型与密钥设置">⚙</button>
         </div>
-        <button id="settingsBtn" class="icon-btn" title="模型与密钥设置">⚙</button>
       </div>
 
-      <div id="settingsArea" class="hidden">
+      <div id="settingsOverlay" class="modal-overlay hidden">
+        <div class="modal-box">
+          <div class="modal-head">
+            <span class="modal-title">设置</span>
+            <button id="settingsClose" class="icon-btn" title="关闭">✕</button>
+          </div>
+          <div id="settingsArea">
       <div class="section">
         <p class="sec-title">模型</p>
         <select id="modelPicker" class="full"></select>
@@ -33,7 +39,9 @@
           <button id="clearKey" class="btn ghost">清除</button>
         </div>
       </div>
-      </div><!-- /settingsArea -->
+          </div><!-- /settingsArea -->
+        </div>
+      </div><!-- /settingsOverlay -->
 
       <div class="section">
         <p class="sec-title">参数</p>
