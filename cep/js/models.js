@@ -479,12 +479,6 @@
           ],
         },
         {
-          key: "negativePrompt",
-          type: "text",
-          label: "负向提示词（可选）",
-          default: "",
-        },
-        {
           key: "size",
           type: "select",
           label: "输出尺寸",

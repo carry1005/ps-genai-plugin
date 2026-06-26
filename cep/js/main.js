@@ -46,7 +46,7 @@
 
   function cacheEls() {
     ["modelPicker", "modelHint", "apiKey", "showKey", "keyBadge", "saveKey", "clearKey",
-      "paramContainer", "prompt", "addRef", "refInfo", "clearRef",
+      "paramContainer", "prompt", "negPrompt", "addRef", "refInfo", "clearRef",
       "settingsBtn", "settingsArea", "settingsOverlay", "settingsClose", "maxEdge",
       "fallbackFull", "layerPrefix", "progress", "status", "generate", "cancel", "selInfo"
     ].forEach(function (id) { els[id] = $(id); });
@@ -207,12 +207,13 @@
     });
   }
 
-  function openPromptDialog() {
+  function openPromptDialog(el) {
+    if (!el || !el.tagName) el = els.prompt;
     if (promptDialogOpen) return;
     promptDialogOpen = true;
-    jsxCall("psaiPromptDialog", [els.prompt.value || ""]).then(function (r) {
+    jsxCall("psaiPromptDialog", [el.value || ""]).then(function (r) {
       promptDialogOpen = false;
-      if (r && r !== "__CANCEL__") { els.prompt.value = r; resetConfirm(); }
+      if (r && r !== "__CANCEL__") { el.value = r; resetConfirm(); }
     }, function () { promptDialogOpen = false; });
   }
 
@@ -232,6 +233,7 @@
     var model = PSAI.models.getById(modelId);
     var prompt = (els.prompt.value || "").trim();
     var options = collectOptions(model);
+    if (els.negPrompt) options.negativePrompt = (els.negPrompt.value || "").trim();
     var maxEdge = parseInt(els.maxEdge.value, 10) || 0;
 
     if (!prompt) { setStatus("请输入提示词。", "error"); els.prompt.focus(); return; }
@@ -325,7 +327,8 @@
     els.fallbackFull.addEventListener("change", function () {
       PSAI.storage.saveSettings({ fallbackFull: !!els.fallbackFull.checked });
     });
-    if (els.prompt) els.prompt.addEventListener("click", openPromptDialog);
+    if (els.prompt) els.prompt.addEventListener("click", function () { openPromptDialog(els.prompt); });
+    if (els.negPrompt) els.negPrompt.addEventListener("click", function () { openPromptDialog(els.negPrompt); });
     if (els.settingsBtn) els.settingsBtn.addEventListener("click", function () { toggleSettings(true); });
     if (els.settingsClose) els.settingsClose.addEventListener("click", function () { toggleSettings(false); });
     if (els.settingsOverlay) els.settingsOverlay.addEventListener("click", function (e) {
