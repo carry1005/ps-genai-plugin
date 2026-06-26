@@ -272,27 +272,40 @@
 
   // ---------- 事件绑定 ----------
 
-  function bindEvents() {
-    els.modelPicker.addEventListener("change", () => {
-      selectModel(els.modelPicker.value);
-    });
+  function on(el, evt, fn) {
+    if (el && typeof el.addEventListener === "function") {
+      el.addEventListener(evt, fn);
+    } else {
+      console.warn("[AI 生成填充] 缺少元素，未能绑定事件：" + evt);
+    }
+  }
 
-    els.showKey.addEventListener("change", () => {
+  function saveAdv() {
+    PSAI.storage.saveSettings({
+      maxEdge: parseInt(els.maxEdge.value, 10) || 0,
+      layerPrefix: els.layerPrefix.value,
+    });
+  }
+
+  function bindEvents() {
+    on(els.modelPicker, "change", () => selectModel(els.modelPicker.value));
+
+    on(els.showKey, "change", () => {
       els.apiKey.setAttribute("type", els.showKey.checked ? "text" : "password");
     });
 
-    els.saveKey.addEventListener("click", async () => {
+    on(els.saveKey, "click", async () => {
       const v = (els.apiKey.value || "").trim();
       try {
         await PSAI.storage.saveApiKey(currentModelId, v);
         updateKeyBadge(!!v);
-        setStatus(v ? "密钥已加密保存。" : "已清空该模型密钥。", "ok");
+        setStatus(v ? "密钥已保存。" : "已清空该模型密钥。", "ok");
       } catch (e) {
         setStatus("密钥保存失败：" + ((e && e.message) || e), "error");
       }
     });
 
-    els.clearKey.addEventListener("click", async () => {
+    on(els.clearKey, "click", async () => {
       els.apiKey.value = "";
       try {
         await PSAI.storage.saveApiKey(currentModelId, "");
@@ -303,51 +316,61 @@
       }
     });
 
-    els.advHead.addEventListener("click", () => {
+    on(els.advHead, "click", () => {
       const open = els.advBody.classList.toggle("open");
       els.advChevron.classList.toggle("open", open);
     });
 
-    [els.maxEdge, els.layerPrefix].forEach((el) =>
-      el.addEventListener("input", () => {
-        PSAI.storage.saveSettings({
-          maxEdge: parseInt(els.maxEdge.value, 10) || 0,
-          layerPrefix: els.layerPrefix.value,
-        });
-      })
-    );
-    els.fallbackFull.addEventListener("change", () => {
+    on(els.maxEdge, "input", saveAdv);
+    on(els.layerPrefix, "input", saveAdv);
+    on(els.fallbackFull, "change", () => {
       PSAI.storage.saveSettings({ fallbackFull: !!els.fallbackFull.checked });
     });
 
-    els.generate.addEventListener("click", onGenerate);
-    els.cancel.addEventListener("click", onCancel);
+    on(els.generate, "click", onGenerate);
+    on(els.cancel, "click", onCancel);
   }
 
   // ---------- 初始化 ----------
 
   async function init() {
     cacheEls();
-    buildModelPicker();
 
-    const settings = PSAI.storage.loadSettings();
-    if (settings.maxEdge != null) els.maxEdge.value = settings.maxEdge;
-    if (settings.layerPrefix) els.layerPrefix.value = settings.layerPrefix;
-    if (settings.fallbackFull != null) els.fallbackFull.checked = !!settings.fallbackFull;
+    // 先绑定事件：即使后续初始化出错，按钮也保证能响应
+    try {
+      bindEvents();
+    } catch (e) {
+      console.error("[AI 生成填充] 事件绑定失败：", e);
+      if (els.status) setStatus("事件绑定失败：" + ((e && e.message) || e), "error");
+    }
 
-    const first =
-      settings.lastModel && PSAI.models.getById(settings.lastModel)
-        ? settings.lastModel
-        : PSAI.models.list[0].id;
+    try {
+      buildModelPicker();
 
-    // 等待 spectrum 组件就绪后再设置选中值
-    els.modelPicker.value = first;
-    await selectModel(first);
+      const settings = PSAI.storage.loadSettings();
+      if (settings.maxEdge != null) els.maxEdge.value = settings.maxEdge;
+      if (settings.layerPrefix) els.layerPrefix.value = settings.layerPrefix;
+      if (settings.fallbackFull != null) els.fallbackFull.checked = !!settings.fallbackFull;
 
-    bindEvents();
-    updateSelInfo();
-    setInterval(updateSelInfo, 1000);
-    setStatus("就绪");
+      const first =
+        settings.lastModel && PSAI.models.getById(settings.lastModel)
+          ? settings.lastModel
+          : PSAI.models.list[0].id;
+
+      els.modelPicker.value = first;
+      await selectModel(first);
+      setStatus("就绪");
+    } catch (e) {
+      console.error("[AI 生成填充] 初始化失败：", e);
+      if (els.status) setStatus("初始化失败：" + ((e && e.message) || e), "error");
+    }
+
+    try {
+      updateSelInfo();
+      setInterval(updateSelInfo, 1000);
+    } catch (e) {
+      console.error("[AI 生成填充] 选区轮询失败：", e);
+    }
   }
 
   if (document.readyState === "loading") {
