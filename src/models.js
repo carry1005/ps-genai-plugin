@@ -369,7 +369,7 @@
           type: "text",
           label: "模型名",
           default: "wanx2.1-imageedit",
-          hint: "图像编辑：wanx2.1-imageedit（也可填 wanx2.0-imageedit）。",
+          hint: "可自由填写。已验证：wanx2.1-imageedit / wanx2.0-imageedit。也可试 qwen-image-2.0-pro 等；若接口不同会报错，把错误发我即可适配。",
         },
         {
           key: "function",

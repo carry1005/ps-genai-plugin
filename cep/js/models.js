@@ -366,14 +366,10 @@
       fields: [
         {
           key: "model",
-          type: "select",
-          label: "模型",
+          type: "text",
+          label: "模型名",
           default: "wanx2.1-imageedit",
-          options: [
-            { value: "wanx2.1-imageedit", label: "万相 2.1 图像编辑(推荐)" },
-            { value: "wanx2.0-imageedit", label: "万相 2.0 图像编辑" },
-          ],
-          hint: "这些万相编辑模型走同一套异步接口。其他模型(如 qwen-image-edit)接口不同，可单独加。",
+          hint: "可自由填写。已验证：wanx2.1-imageedit / wanx2.0-imageedit。也可试 qwen-image-2.0-pro 等；若接口不同会报错，把错误发我即可适配。",
         },
         {
           key: "function",
