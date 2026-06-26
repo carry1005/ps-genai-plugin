@@ -1,5 +1,4 @@
 @echo off
-chcp 65001 >nul
 title Install AI GenFill (permanent) - Run as Administrator
 rem ============================================================
 rem  Permanently install this UXP plugin into Photoshop by
@@ -38,7 +37,7 @@ echo.
 echo   DONE - files copied.
 echo   1) FULLY quit Photoshop (not just close the window).
 echo   2) Reopen Photoshop.
-echo   3) Look under the  Plugins  menu for "AI 生成填充".
+echo   3) Look under the  Plugins  menu for "AI GenFill".
 echo.
 echo   If it does not show up, the manual UDT method still works.
 echo.

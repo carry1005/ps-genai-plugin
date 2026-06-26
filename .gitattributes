@@ -1,0 +1,7 @@
+# Windows 批处理脚本必须使用 CRLF 行尾，否则下载到 Windows 后 cmd 会报
+# “不是内部或外部命令”。强制这些类型在检出/打包(Download ZIP)时为 CRLF。
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 其余文本默认按平台处理
+* text=auto
