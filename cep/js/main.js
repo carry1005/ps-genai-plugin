@@ -24,6 +24,8 @@
   var running = false;
   var abortCtrl = null;
   var referenceImages = [];
+  var pendingConfirm = false;
+  var confirmTimer = null;
 
   function $(id) { return document.getElementById(id); }
 
@@ -204,6 +206,15 @@
     });
   }
 
+  function resetConfirm() {
+    pendingConfirm = false;
+    if (confirmTimer) { clearTimeout(confirmTimer); confirmTimer = null; }
+    if (els.generate) {
+      els.generate.textContent = "生成";
+      els.generate.classList.remove("confirm");
+    }
+  }
+
   async function onGenerate() {
     if (running) return;
     if (!fs) { setStatus("Node 文件系统不可用（manifest 需 --enable-nodejs）。", "error"); return; }
@@ -219,9 +230,17 @@
       setStatus("请先填写并保存 API Key。", "error"); els.apiKey.focus(); return;
     }
 
-    // 生成前二次确认
-    var confirmRes = await jsxCall("psaiConfirm", ["确定要生成吗？这会消耗一次模型调用额度。"]);
-    if (confirmRes !== "yes") { setStatus("已取消生成。"); return; }
+    // 面板内二次确认：首次点击进入确认态，再点一次才真正生成（避免误触）
+    if (!pendingConfirm) {
+      pendingConfirm = true;
+      els.generate.textContent = "⚠️ 确认生成（再点一次）";
+      els.generate.classList.add("confirm");
+      setStatus("再次点击「确认生成」开始，会消耗一次模型调用额度。5 秒内未点将取消。");
+      if (confirmTimer) clearTimeout(confirmTimer);
+      confirmTimer = setTimeout(resetConfirm, 5000);
+      return;
+    }
+    resetConfirm();
 
     setRunning(true);
     abortCtrl = new AbortController();
@@ -272,7 +291,8 @@
   }
 
   function bindEvents() {
-    els.modelPicker.addEventListener("change", function () { selectModel(els.modelPicker.value); });
+    els.modelPicker.addEventListener("change", function () { resetConfirm(); selectModel(els.modelPicker.value); });
+    if (els.prompt) els.prompt.addEventListener("input", resetConfirm);
     els.showKey.addEventListener("change", function () {
       els.apiKey.type = els.showKey.checked ? "text" : "password";
     });

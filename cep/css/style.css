@@ -53,6 +53,8 @@ input[type="range"] { padding: 0; }
 .btn:hover { background: #5f9bff; }
 .btn:disabled { opacity: 0.5; cursor: default; }
 .btn.cta { background: #2680eb; font-weight: 700; }
+.btn.confirm { background: #e6760e; font-weight: 700; }
+.btn.confirm:hover { background: #f3870f; }
 .btn.ghost { background: transparent; border: 1px solid #5a5a5a; color: #d0d0d0; flex: 0 0 auto; }
 
 .badge {
