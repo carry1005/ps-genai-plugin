@@ -80,3 +80,18 @@ input[type="range"] { padding: 0; }
 .icon-btn { background: transparent; border: 1px solid #5a5a5a; color: #d0d0d0; border-radius: 5px; width: 30px; height: 28px; cursor: pointer; font-size: 15px; flex: 0 0 auto; }
 .icon-btn:hover { background: rgba(255, 255, 255, 0.08); }
 #settingsArea { display: flex; flex-direction: column; gap: 10px; }
+
+.combo { position: relative; }
+.combo > input { width: 100%; padding-right: 26px; }
+.combo-arrow {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  color: #9a9a9a; font-size: 11px; cursor: pointer; user-select: none;
+}
+.combo-list {
+  position: absolute; left: 0; right: 0; top: 100%; margin-top: 2px;
+  background: #1e1e1e; border: 1px solid #4a4a4a; border-radius: 4px;
+  max-height: 200px; overflow-y: auto; z-index: 50;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+.combo-item { padding: 6px 8px; cursor: pointer; font-size: 12px; color: #e8e8e8; white-space: nowrap; }
+.combo-item:hover { background: #2680eb; color: #fff; }

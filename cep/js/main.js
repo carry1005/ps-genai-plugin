@@ -99,6 +99,7 @@
       wrap.appendChild(label);
 
       var ctrl;
+      var mount = null;
       if (f.type === "select") {
         ctrl = document.createElement("select"); ctrl.className = "full";
         (f.options || []).forEach(function (o) {
@@ -109,22 +110,36 @@
         });
         ctrl.addEventListener("change", onParamChange);
       } else if (f.type === "combo") {
-        // 可编辑下拉：从预设里选，也可手动敲字/删除改成任意值
+        // 自绘可编辑下拉：输入框 + 预设列表（CEF 面板里 datalist 点击不弹，故自绘）
+        var comboWrap = document.createElement("div"); comboWrap.className = "combo";
         ctrl = document.createElement("input"); ctrl.type = "text"; ctrl.className = "full";
         ctrl.value = val == null ? "" : val;
         ctrl.setAttribute("autocomplete", "off");
-        var dl = document.createElement("datalist");
-        dl.id = "dl_" + f.key + "_" + Math.random().toString(36).slice(2, 8);
+        var arrow = document.createElement("span"); arrow.className = "combo-arrow"; arrow.textContent = "▾";
+        var listEl = document.createElement("div"); listEl.className = "combo-list hidden";
+        var toggleList = function (show) {
+          if (show == null) show = listEl.classList.contains("hidden");
+          if (show) listEl.classList.remove("hidden"); else listEl.classList.add("hidden");
+        };
         (f.options || []).forEach(function (o) {
-          var op = document.createElement("option");
-          op.value = o.value;
-          if (o.label && o.label !== o.value) op.label = o.label;
-          dl.appendChild(op);
+          var item = document.createElement("div"); item.className = "combo-item";
+          item.textContent = o.label || o.value;
+          item.addEventListener("mousedown", function (e) {
+            e.preventDefault();
+            ctrl.value = o.value;
+            toggleList(false);
+            onParamChange();
+          });
+          listEl.appendChild(item);
         });
-        ctrl.setAttribute("list", dl.id);
-        wrap.appendChild(dl);
+        arrow.addEventListener("mousedown", function (e) { e.preventDefault(); toggleList(); ctrl.focus(); });
+        ctrl.addEventListener("focus", function () { toggleList(true); });
+        ctrl.addEventListener("blur", function () { setTimeout(function () { toggleList(false); }, 150); });
         ctrl.addEventListener("input", onParamChange);
-        ctrl.addEventListener("change", onParamChange);
+        comboWrap.appendChild(ctrl);
+        comboWrap.appendChild(arrow);
+        comboWrap.appendChild(listEl);
+        mount = comboWrap;
       } else if (f.type === "range") {
         ctrl = document.createElement("input"); ctrl.type = "range";
         ctrl.min = f.min; ctrl.max = f.max; ctrl.step = f.step; ctrl.value = val; ctrl.className = "full";
@@ -139,7 +154,7 @@
         ctrl.addEventListener("input", onParamChange);
       }
       paramEls[f.key] = ctrl;
-      wrap.appendChild(ctrl);
+      wrap.appendChild(mount || ctrl);
       if (f.hint && f.type !== "text") {
         var h = document.createElement("p"); h.className = "hint"; h.textContent = f.hint;
         wrap.appendChild(h);
