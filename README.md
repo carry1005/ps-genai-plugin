@@ -1,4 +1,4 @@
-# AI 生成填充 · Photoshop 插件
+# AI修图插件byCarry · Photoshop 插件
 
 一个基于 **Adobe UXP** 的 Photoshop 面板插件：**框选一块区域 → 在聊天框输入文字 → 调用文生图/图生图模型 → 结果作为新图层写回原位置**。
 
@@ -36,7 +36,7 @@
 2. 安装并打开 **UXP Developer Tool**。
 3. 点击 **Add Plugin**，选择本项目的 `manifest.json`。
 4. 在该插件行点击 **Load**（或 Actions → Load）。
-5. Photoshop 中 **插件 → AI 生成填充** 即可看到面板（也可在 UDT 里点 ••• → Load 到指定 PS）。
+5. Photoshop 中 **插件 → AI修图插件byCarry** 即可看到面板（也可在 UDT 里点 ••• → Load 到指定 PS）。
 
 > 修改代码后，在 UDT 里点 **Reload** 即可热更新。
 

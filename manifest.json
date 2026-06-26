@@ -1,7 +1,7 @@
 {
   "manifestVersion": 5,
   "id": "com.community.psgenaifill",
-  "name": "AI 生成填充",
+  "name": "AI修图插件byCarry",
   "version": "1.0.0",
   "main": "index.html",
   "host": {
@@ -13,7 +13,7 @@
       "type": "panel",
       "id": "psGenaiFillPanel",
       "label": {
-        "default": "AI 生成填充"
+        "default": "AI修图插件byCarry"
       },
       "minimumSize": { "width": 300, "height": 420 },
       "maximumSize": { "width": 1200, "height": 2400 },
