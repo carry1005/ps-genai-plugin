@@ -125,3 +125,24 @@ function psaiPlaceImage(path, left, top, right, bottom, layerName) {
         return "ERR|" + e.toString();
     }
 }
+
+// 弹原生 ScriptUI 对话框输入/编辑文本（解决 CEP 面板中文输入法无法输入的问题）
+function psaiPromptDialog(defaultText) {
+    try {
+        var dlg = new Window("dialog", "输入提示词（支持中文）");
+        dlg.alignChildren = "fill";
+        var et = dlg.add("edittext", undefined, defaultText || "", { multiline: true, scrolling: true });
+        et.preferredSize = [420, 140];
+        var grp = dlg.add("group");
+        grp.alignment = "right";
+        var okBtn = grp.add("button", undefined, "确定", { name: "ok" });
+        var cancelBtn = grp.add("button", undefined, "取消", { name: "cancel" });
+        var out = "__CANCEL__";
+        okBtn.onClick = function () { out = et.text; dlg.close(); };
+        cancelBtn.onClick = function () { out = "__CANCEL__"; dlg.close(); };
+        dlg.show();
+        return out;
+    } catch (e) {
+        return "__CANCEL__";
+    }
+}

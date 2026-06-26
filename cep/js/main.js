@@ -42,7 +42,7 @@
 
   function cacheEls() {
     ["modelPicker", "modelHint", "apiKey", "showKey", "keyBadge", "saveKey", "clearKey",
-      "paramContainer", "prompt", "advHead", "advChevron", "advBody", "maxEdge",
+      "paramContainer", "prompt", "cnInput", "advHead", "advChevron", "advBody", "maxEdge",
       "fallbackFull", "layerPrefix", "progress", "status", "generate", "cancel", "selInfo"
     ].forEach(function (id) { els[id] = $(id); });
   }
@@ -242,6 +242,11 @@
     els.layerPrefix.addEventListener("input", saveAdv);
     els.fallbackFull.addEventListener("change", function () {
       PSAI.storage.saveSettings({ fallbackFull: !!els.fallbackFull.checked });
+    });
+    if (els.cnInput) els.cnInput.addEventListener("click", function () {
+      jsxCall("psaiPromptDialog", [els.prompt.value || ""]).then(function (r) {
+        if (r && r !== "__CANCEL__") els.prompt.value = r;
+      });
     });
     els.generate.addEventListener("click", onGenerate);
     els.cancel.addEventListener("click", onCancel);
