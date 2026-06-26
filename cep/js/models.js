@@ -267,10 +267,72 @@
 
   // ---------- 适配器：通义千问 Qwen / 万相（DashScope，异步任务制） ----------
 
-  async function qwenGenerate({ imageBase64, prompt, apiKey, options, signal }) {
+  async function qwenGenerate(payload) {
+    var model = ((payload.options && payload.options.model) || "wanx2.1-imageedit").trim();
+    if (/^qwen-image/i.test(model)) {
+      return qwenImageMultimodal(payload, model);
+    }
+    return wanxImageEdit(payload, model);
+  }
+
+  // qwen-image 系列：multimodal-generation 同步接口（参考官方 demo）
+  async function qwenImageMultimodal({ imageBase64, prompt, apiKey, options, signal }, model) {
     requireKey(apiKey, "阿里云百炼 DashScope");
-    if (!imageBase64) throw new Error("Qwen 图像编辑需要先框选一块区域作为输入图。");
-    const model = (options.model || "wanx2.1-imageedit").trim();
+    const auth = "Bearer " + apiKey.trim();
+
+    const content = [];
+    if (imageBase64) content.push({ image: "data:image/jpeg;base64," + U.stripDataUrl(imageBase64) });
+    content.push({ text: prompt || "" });
+
+    let base = (options.baseUrl || "").trim();
+    if (!base) base = "https://dashscope.aliyuncs.com/api/v1";
+    base = base.replace(/\/+$/, "");
+    const url = base + "/services/aigc/multimodal-generation/generation";
+
+    const { res, data } = await apiFetch(
+      url,
+      {
+        method: "POST",
+        headers: { Authorization: auth, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: model,
+          input: { messages: [{ role: "user", content: content }] },
+          parameters: {
+            result_format: "message",
+            n: 1,
+            watermark: false,
+            negative_prompt: options.negativePrompt || "",
+          },
+        }),
+      },
+      signal,
+      120000
+    );
+    if (!res.ok) throw new Error(extractErr(data) || `Qwen-Image 请求失败 (${res.status})`);
+
+    // 解析 output.choices[0].message.content[].image（URL 或 base64）
+    const choices = U.get(data, "output.choices", []) || [];
+    for (const c of choices) {
+      const parts = U.get(c, "message.content", []) || [];
+      for (const p of parts) {
+        if (p && p.image) {
+          if (typeof p.image === "string" && p.image.indexOf("http") === 0) {
+            return { base64: await downloadAsBase64(p.image, signal), mimeType: "image/png" };
+          }
+          return { base64: U.stripDataUrl(p.image), mimeType: "image/png" };
+        }
+      }
+    }
+    const ru = U.get(data, "output.results.0.url");
+    if (ru) return { base64: await downloadAsBase64(ru, signal), mimeType: "image/png" };
+
+    throw new Error("Qwen-Image 未返回图片。响应片段：" + U.truncate(JSON.stringify(data), 240));
+  }
+
+  // 万相 imageedit 系列：image2image 异步任务接口
+  async function wanxImageEdit({ imageBase64, prompt, apiKey, options, signal }, model) {
+    requireKey(apiKey, "阿里云百炼 DashScope");
+    if (!imageBase64) throw new Error("万相图像编辑需要先框选一块区域作为输入图。");
     const func = options.function || "description_edit";
     const auth = "Bearer " + apiKey.trim();
     const dataUrl = "data:image/jpeg;base64," + U.stripDataUrl(imageBase64);
@@ -368,8 +430,21 @@
           key: "model",
           type: "text",
           label: "模型名",
-          default: "wanx2.1-imageedit",
-          hint: "可自由填写。已验证：wanx2.1-imageedit / wanx2.0-imageedit。也可试 qwen-image-2.0-pro 等；若接口不同会报错，把错误发我即可适配。",
+          default: "qwen-image-2.0-pro",
+          hint: "qwen-image* 走多模态接口；wanx2.1-imageedit / wanx2.0-imageedit 走万相异步接口。",
+        },
+        {
+          key: "baseUrl",
+          type: "text",
+          label: "API 基础地址（qwen-image 可选）",
+          default: "",
+          hint: "qwen-image 若用专属网关：填 https://xxx.cn-beijing.maas.aliyuncs.com/api/v1（到 /api/v1 为止）；留空用默认 dashscope。万相不填。",
+        },
+        {
+          key: "negativePrompt",
+          type: "text",
+          label: "负向提示词（可选）",
+          default: "",
         },
         {
           key: "function",
