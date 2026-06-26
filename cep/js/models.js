@@ -279,8 +279,22 @@
     return wanxImageEdit(payload, model);
   }
 
+  // 输出尺寸：UI 是 1K/2K/4K 档位。wan2.7 原生认档位并自动按输入比例缩放；
+  // qwen-image 需要具体像素值，这里按框选区域宽高比自动换算，避免变形。
+  function resolveQwenSize(model, tier, w, h) {
+    if (!tier) return null;
+    if (/^wan2\.7-image/i.test(model)) return tier;
+    var edge = tier === "1K" ? 1024 : 2048; // qwen-image-2.0 单边上限约 2048
+    if (!w || !h || w <= 0 || h <= 0) return edge + "*" + edge;
+    var W, H;
+    if (w >= h) { W = edge; H = Math.round(edge * h / w); }
+    else { H = edge; W = Math.round(edge * w / h); }
+    function clamp(v) { v = Math.max(512, Math.min(2048, v)); return Math.round(v / 16) * 16; }
+    return clamp(W) + "*" + clamp(H);
+  }
+
   // qwen-image 系列：multimodal-generation 同步接口（参考官方 demo）
-  async function qwenImageMultimodal({ imageBase64, prompt, apiKey, options, signal, extraImages }, model) {
+  async function qwenImageMultimodal({ imageBase64, prompt, apiKey, options, signal, extraImages, inputW, inputH }, model) {
     requireKey(apiKey, "阿里云百炼 DashScope");
     const auth = "Bearer " + apiKey.trim();
 
@@ -302,7 +316,8 @@
       params.prompt_extend = options.promptExtend !== "false";
     }
     if (options.negativePrompt) params.negative_prompt = options.negativePrompt;
-    if (options.size && options.size !== "auto") params.size = options.size;
+    var sizeParam = resolveQwenSize(model, options.size, inputW, inputH);
+    if (sizeParam) params.size = sizeParam;
     if (options.seed !== "" && options.seed != null && !isNaN(Number(options.seed))) {
       params.seed = Number(options.seed);
     }
@@ -452,26 +467,6 @@
             { value: "qwen-image-edit-plus" },
             { value: "qwen-image-edit" },
           ],
-          hint: "下拉选预设，或在框里直接敲字/删除改成任意模型名。qwen-image*/wan2.7-image* 走多模态同步接口；wanx* 走万相异步接口。",
-        },
-        {
-          key: "size",
-          type: "combo",
-          label: "输出尺寸 / 分辨率（可选，可手动改）",
-          default: "",
-          options: [
-            { value: "1K", label: "1K（wan2.7：1024²）" },
-            { value: "2K", label: "2K（wan2.7：2048²）" },
-            { value: "4K", label: "4K（wan2.7-pro 文生图）" },
-            { value: "2048*2048", label: "2048×2048 (1:1)" },
-            { value: "2688*1536", label: "2688×1536 (16:9)" },
-            { value: "1536*2688", label: "1536×2688 (9:16)" },
-            { value: "2368*1728", label: "2368×1728 (4:3)" },
-            { value: "1728*2368", label: "1728×2368 (3:4)" },
-            { value: "1664*928", label: "1664×928" },
-            { value: "1328*1328", label: "1328×1328" },
-          ],
-          hint: "wan2.7-image* 用 1K/2K/4K；qwen-image-2.0* 用像素值如 2048*2048。可手动输入。留空=模型自定，最稳。",
         },
         {
           key: "promptExtend",
@@ -488,6 +483,17 @@
           type: "text",
           label: "负向提示词（可选）",
           default: "",
+        },
+        {
+          key: "size",
+          type: "select",
+          label: "输出尺寸",
+          default: "2K",
+          options: [
+            { value: "1K", label: "1K" },
+            { value: "2K", label: "2K" },
+            { value: "4K", label: "4K" },
+          ],
         },
       ],
     },

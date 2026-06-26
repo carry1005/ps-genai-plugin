@@ -47,7 +47,7 @@
   function cacheEls() {
     ["modelPicker", "modelHint", "apiKey", "showKey", "keyBadge", "saveKey", "clearKey",
       "paramContainer", "prompt", "addRef", "refInfo", "clearRef",
-      "settingsBtn", "settingsArea", "settingsOverlay", "settingsClose", "advHead", "advChevron", "advBody", "maxEdge",
+      "settingsBtn", "settingsArea", "settingsOverlay", "settingsClose", "maxEdge",
       "fallbackFull", "layerPrefix", "progress", "status", "generate", "cancel", "selInfo"
     ].forEach(function (id) { els[id] = $(id); });
   }
@@ -268,6 +268,7 @@
       var result = await PSAI.models.generate(modelId, {
         imageBase64: inputB64, prompt: prompt, apiKey: apiKey, options: options,
         signal: abortCtrl.signal, extraImages: referenceImages.slice(),
+        inputW: w, inputH: h,
       });
 
       setStatus("模型已返回，正在写回图层…");
@@ -318,10 +319,6 @@
       PSAI.storage.saveApiKey(currentModelId, "").then(function () {
         updateKeyBadge(false); setStatus("已清空该模型密钥。", "ok");
       });
-    });
-    els.advHead.addEventListener("click", function () {
-      var open = els.advBody.classList.toggle("open");
-      els.advChevron.textContent = open ? "▼" : "▶";
     });
     els.maxEdge.addEventListener("input", saveAdv);
     els.layerPrefix.addEventListener("input", saveAdv);
