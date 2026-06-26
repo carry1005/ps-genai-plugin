@@ -146,3 +146,19 @@ function psaiPromptDialog(defaultText) {
         return "__CANCEL__";
     }
 }
+
+// 生成前二次确认（原生确认框）
+function psaiConfirm(msg) {
+    try { return confirm(msg) ? "yes" : "no"; } catch (e) { return "yes"; }
+}
+
+// 选择参考图片文件，返回 "OK|路径" / "__CANCEL__" / "ERR|..."
+function psaiPickImage() {
+    try {
+        var f = File.openDialog("选择参考图片", "图片:*.png;*.jpg;*.jpeg;*.webp;*.bmp", false);
+        if (f === null) return "__CANCEL__";
+        return "OK|" + f.fsName;
+    } catch (e) {
+        return "ERR|" + e.toString();
+    }
+}

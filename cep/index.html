@@ -7,10 +7,14 @@
   <body>
     <div class="app">
       <div class="header">
-        <h1>AI 生成填充</h1>
-        <p class="sub">框选区域 → 文字描述 → 图生图 → 新图层</p>
+        <div>
+          <h1>AI 生成填充</h1>
+          <p class="sub">框选区域 → 文字描述 → 图生图 → 新图层</p>
+        </div>
+        <button id="settingsBtn" class="icon-btn" title="模型与密钥设置">⚙</button>
       </div>
 
+      <div id="settingsArea">
       <div class="section">
         <p class="sec-title">① 模型</p>
         <select id="modelPicker" class="full"></select>
@@ -29,6 +33,7 @@
           <button id="clearKey" class="btn ghost">清除</button>
         </div>
       </div>
+      </div><!-- /settingsArea -->
 
       <div class="section">
         <p class="sec-title">③ 参数</p>
@@ -41,6 +46,11 @@
         <div class="row-between">
           <button id="cnInput" class="btn ghost">✏️ 中文输入/编辑</button>
           <span class="hint">中文输入法打不出时，点左边按钮，或直接粘贴</span>
+        </div>
+        <div class="row-between" style="margin-top:6px">
+          <button id="addRef" class="btn ghost">➕ 添加参考图</button>
+          <span class="hint" id="refInfo">无参考图</span>
+          <button id="clearRef" class="btn ghost hidden">清空</button>
         </div>
       </div>
 

@@ -130,7 +130,7 @@
 
   // ---------- 适配器：Google Nano Banana (Gemini Image) ----------
 
-  async function geminiGenerate({ imageBase64, prompt, apiKey, options, signal }) {
+  async function geminiGenerate({ imageBase64, prompt, apiKey, options, signal, extraImages }) {
     requireKey(apiKey, "Google AI Studio");
     const model = (options.model || "gemini-2.5-flash-image").trim();
     const url =
@@ -141,6 +141,9 @@
 
     const parts = [];
     if (prompt) parts.push({ text: prompt });
+    (extraImages || []).forEach(function (b) {
+      parts.push({ inlineData: { mimeType: "image/jpeg", data: U.stripDataUrl(b) } });
+    });
     if (imageBase64) {
       parts.push({ inlineData: { mimeType: "image/jpeg", data: U.stripDataUrl(imageBase64) } });
     }
@@ -276,11 +279,14 @@
   }
 
   // qwen-image 系列：multimodal-generation 同步接口（参考官方 demo）
-  async function qwenImageMultimodal({ imageBase64, prompt, apiKey, options, signal }, model) {
+  async function qwenImageMultimodal({ imageBase64, prompt, apiKey, options, signal, extraImages }, model) {
     requireKey(apiKey, "阿里云百炼 DashScope");
     const auth = "Bearer " + apiKey.trim();
 
     const content = [];
+    (extraImages || []).forEach(function (b) {
+      content.push({ image: "data:image/jpeg;base64," + U.stripDataUrl(b) });
+    });
     if (imageBase64) content.push({ image: "data:image/jpeg;base64," + U.stripDataUrl(imageBase64) });
     content.push({ text: prompt || "" });
 

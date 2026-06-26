@@ -23,6 +23,7 @@
   var currentModelId = null;
   var running = false;
   var abortCtrl = null;
+  var referenceImages = [];
 
   function $(id) { return document.getElementById(id); }
 
@@ -42,7 +43,8 @@
 
   function cacheEls() {
     ["modelPicker", "modelHint", "apiKey", "showKey", "keyBadge", "saveKey", "clearKey",
-      "paramContainer", "prompt", "cnInput", "advHead", "advChevron", "advBody", "maxEdge",
+      "paramContainer", "prompt", "cnInput", "addRef", "refInfo", "clearRef",
+      "settingsBtn", "settingsArea", "advHead", "advChevron", "advBody", "maxEdge",
       "fallbackFull", "layerPrefix", "progress", "status", "generate", "cancel", "selInfo"
     ].forEach(function (id) { els[id] = $(id); });
   }
@@ -60,6 +62,22 @@
   function updateKeyBadge(saved) {
     els.keyBadge.textContent = saved ? "已保存 ✓" : "未保存";
     els.keyBadge.className = "badge " + (saved ? "ok" : "warn");
+  }
+
+  function toggleSettings(open) {
+    var show = open == null ? els.settingsArea.classList.contains("hidden") : open;
+    els.settingsArea.classList.toggle("hidden", !show);
+    PSAI.storage.saveSettings({ settingsOpen: show });
+  }
+
+  function updateRefInfo() {
+    if (referenceImages.length === 0) {
+      els.refInfo.textContent = "无参考图";
+      els.clearRef.classList.add("hidden");
+    } else {
+      els.refInfo.textContent = referenceImages.length + " 张参考图";
+      els.clearRef.classList.remove("hidden");
+    }
   }
 
   function buildModelPicker() {
@@ -169,6 +187,10 @@
       setStatus("请先填写并保存 API Key。", "error"); els.apiKey.focus(); return;
     }
 
+    // 生成前二次确认
+    var confirmRes = await jsxCall("psaiConfirm", ["确定要生成吗？这会消耗一次模型调用额度。"]);
+    if (confirmRes !== "yes") { setStatus("已取消生成。"); return; }
+
     setRunning(true);
     abortCtrl = new AbortController();
     try {
@@ -183,7 +205,8 @@
       var w = bounds[2] - bounds[0], h = bounds[3] - bounds[1];
       setStatus("已导出 " + w + "×" + h + "，正在请求模型…");
       var result = await PSAI.models.generate(modelId, {
-        imageBase64: inputB64, prompt: prompt, apiKey: apiKey, options: options, signal: abortCtrl.signal,
+        imageBase64: inputB64, prompt: prompt, apiKey: apiKey, options: options,
+        signal: abortCtrl.signal, extraImages: referenceImages.slice(),
       });
 
       setStatus("模型已返回，正在写回图层…");
@@ -248,6 +271,25 @@
         if (r && r !== "__CANCEL__") els.prompt.value = r;
       });
     });
+    if (els.settingsBtn) els.settingsBtn.addEventListener("click", function () { toggleSettings(); });
+    if (els.addRef) els.addRef.addEventListener("click", function () {
+      if (!fs) { setStatus("Node 不可用，无法读取参考图。", "error"); return; }
+      jsxCall("psaiPickImage", []).then(function (r) {
+        if (!r || r === "__CANCEL__") return;
+        if (r.indexOf("OK|") !== 0) { setStatus("选图失败：" + r, "error"); return; }
+        try {
+          var b64 = fs.readFileSync(r.slice(3)).toString("base64");
+          referenceImages.push(b64);
+          updateRefInfo();
+          setStatus("已添加参考图（共 " + referenceImages.length + " 张）", "ok");
+        } catch (e) { setStatus("读取参考图失败：" + ((e && e.message) || e), "error"); }
+      });
+    });
+    if (els.clearRef) els.clearRef.addEventListener("click", function () {
+      referenceImages = [];
+      updateRefInfo();
+      setStatus("已清空参考图。", "ok");
+    });
     els.generate.addEventListener("click", onGenerate);
     els.cancel.addEventListener("click", onCancel);
   }
@@ -261,6 +303,8 @@
       if (s.maxEdge != null) els.maxEdge.value = s.maxEdge;
       if (s.layerPrefix) els.layerPrefix.value = s.layerPrefix;
       if (s.fallbackFull != null) els.fallbackFull.checked = !!s.fallbackFull;
+      toggleSettings(s.settingsOpen !== false);
+      updateRefInfo();
       var first = (s.lastModel && PSAI.models.getById(s.lastModel)) ? s.lastModel : PSAI.models.list[0].id;
       els.modelPicker.value = first;
       selectModel(first);

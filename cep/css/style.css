@@ -75,3 +75,8 @@ input[type="range"] { padding: 0; }
 .collapse-body { display: none; flex-direction: column; gap: 8px; padding-top: 6px; }
 .collapse-body.open { display: flex; }
 .hidden { display: none !important; }
+
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.icon-btn { background: transparent; border: 1px solid #5a5a5a; color: #d0d0d0; border-radius: 5px; width: 30px; height: 28px; cursor: pointer; font-size: 15px; flex: 0 0 auto; }
+.icon-btn:hover { background: rgba(255, 255, 255, 0.08); }
+#settingsArea { display: flex; flex-direction: column; gap: 10px; }
