@@ -22,7 +22,8 @@ body {
   gap: 8px;
 }
 .section.grow { flex: 1 1 auto; min-height: 0; }
-.section.grow #prompt { flex: 1 1 auto; min-height: 60px; resize: none; }
+.section.grow #prompt { flex: 0 0 auto; resize: none; }
+.section.grow #refThumbs { flex: 1 1 auto; min-height: 48px; overflow-y: auto; align-content: flex-start; }
 .sec-title {
   font-size: 11px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.4px; color: #9a9a9a; margin: 0;
