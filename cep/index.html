@@ -63,10 +63,12 @@
         <div class="collapse-head" id="advHead"><span id="advChevron">▶</span> 高级选项</div>
         <div class="collapse-body" id="advBody">
           <label class="lbl">上传最长边(像素, 0=原始)</label>
-          <input id="maxEdge" type="number" value="1024" class="full" />
-          <label class="inline"><input type="checkbox" id="fallbackFull" checked /> 无选区时用整张画布</label>
-          <label class="lbl">新图层命名前缀</label>
-          <input id="layerPrefix" type="text" value="AI" class="full" />
+          <input id="maxEdge" type="number" value="2048" class="full" />
+          <div class="hidden">
+            <label class="inline"><input type="checkbox" id="fallbackFull" checked /> 无选区时用整张画布</label>
+            <label class="lbl">新图层命名前缀</label>
+            <input id="layerPrefix" type="text" value="AI" class="full" />
+          </div>
         </div>
       </div>
 
