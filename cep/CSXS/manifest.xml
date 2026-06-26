@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ExtensionManifest Version="9.0" ExtensionBundleId="com.community.psgenai.cep" ExtensionBundleVersion="1.0.0" ExtensionBundleName="AI 生成填充" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ExtensionManifest Version="9.0" ExtensionBundleId="com.community.psgenai.cep" ExtensionBundleVersion="1.0.0" ExtensionBundleName="AI修图插件byCarry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <ExtensionList>
         <Extension Id="com.community.psgenai.cep.panel" Version="1.0.0" />
     </ExtensionList>
@@ -28,7 +28,7 @@
                 </Resources>
                 <UI>
                     <Type>Panel</Type>
-                    <Menu>AI 生成填充</Menu>
+                    <Menu>AI修图插件byCarry</Menu>
                     <Geometry>
                         <Size>
                             <Height>600</Height>
