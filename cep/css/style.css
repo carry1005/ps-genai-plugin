@@ -1,12 +1,14 @@
 * { box-sizing: border-box; }
+html, body { height: 100%; }
 body {
   margin: 0;
   background: #2d2d2d;
   color: #e8e8e8;
   font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
   font-size: 12px;
+  overflow: hidden;
 }
-.app { display: flex; flex-direction: column; gap: 10px; padding: 12px; }
+.app { display: flex; flex-direction: column; gap: 10px; padding: 12px; height: 100%; overflow: hidden; }
 .header h1 { font-size: 15px; margin: 0; }
 .sub { color: #9a9a9a; font-size: 11px; margin: 2px 0 0; }
 
@@ -19,6 +21,8 @@ body {
   flex-direction: column;
   gap: 8px;
 }
+.section.grow { flex: 1 1 auto; min-height: 0; }
+.section.grow #prompt { flex: 1 1 auto; min-height: 60px; resize: none; }
 .sec-title {
   font-size: 11px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.4px; color: #9a9a9a; margin: 0;
