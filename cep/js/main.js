@@ -335,7 +335,7 @@
       if (s.maxEdge != null) els.maxEdge.value = s.maxEdge;
       if (s.layerPrefix) els.layerPrefix.value = s.layerPrefix;
       if (s.fallbackFull != null) els.fallbackFull.checked = !!s.fallbackFull;
-      toggleSettings(s.settingsOpen !== false);
+      toggleSettings(s.settingsOpen === true);
       updateRefInfo();
       var first = (s.lastModel && PSAI.models.getById(s.lastModel)) ? s.lastModel : PSAI.models.list[0].id;
       els.modelPicker.value = first;

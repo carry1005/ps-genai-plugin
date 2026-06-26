@@ -14,15 +14,15 @@
         <button id="settingsBtn" class="icon-btn" title="模型与密钥设置">⚙</button>
       </div>
 
-      <div id="settingsArea">
+      <div id="settingsArea" class="hidden">
       <div class="section">
-        <p class="sec-title">① 模型</p>
+        <p class="sec-title">模型</p>
         <select id="modelPicker" class="full"></select>
         <p class="hint" id="modelHint"></p>
       </div>
 
       <div class="section">
-        <p class="sec-title">② API 密钥</p>
+        <p class="sec-title">API 密钥</p>
         <input id="apiKey" type="password" class="full" placeholder="粘贴该模型的 API Key" />
         <div class="row-between">
           <label class="inline"><input type="checkbox" id="showKey" /> 显示</label>
@@ -36,12 +36,12 @@
       </div><!-- /settingsArea -->
 
       <div class="section">
-        <p class="sec-title">③ 参数</p>
+        <p class="sec-title">参数</p>
         <div id="paramContainer"></div>
       </div>
 
       <div class="section">
-        <p class="sec-title">④ 提示词</p>
+        <p class="sec-title">提示词</p>
         <textarea id="prompt" class="full" rows="3" placeholder="描述想对框选区域做的修改，例如：把外套改成红色皮夹克，保留人物姿态"></textarea>
         <div class="row-between">
           <button id="cnInput" class="btn ghost">✏️ 中文输入/编辑</button>
