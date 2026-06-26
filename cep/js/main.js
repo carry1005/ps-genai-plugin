@@ -47,7 +47,7 @@
   function cacheEls() {
     ["modelPicker", "modelHint", "apiKey", "showKey", "keyBadge", "saveKey", "clearKey",
       "paramContainer", "prompt", "negPrompt", "addRef", "refInfo", "clearRef", "refThumbs",
-      "settingsBtn", "settingsArea", "settingsOverlay", "settingsClose", "maxEdge",
+      "settingsBtn", "settingsArea", "settingsOverlay", "settingsClose", "paramsBtn", "paramsOverlay", "paramsClose", "maxEdge",
       "fallbackFull", "layerPrefix", "progress", "status", "generate", "cancel", "selInfo"
     ].forEach(function (id) { els[id] = $(id); });
   }
@@ -71,6 +71,12 @@
     if (!els.settingsOverlay) return;
     var show = open == null ? els.settingsOverlay.classList.contains("hidden") : open;
     els.settingsOverlay.classList.toggle("hidden", !show);
+  }
+
+  function toggleParams(open) {
+    if (!els.paramsOverlay) return;
+    var show = open == null ? els.paramsOverlay.classList.contains("hidden") : open;
+    els.paramsOverlay.classList.toggle("hidden", !show);
   }
 
   function guessMimeFromB64(b64) {
@@ -393,6 +399,11 @@
     if (els.settingsClose) els.settingsClose.addEventListener("click", function () { toggleSettings(false); });
     if (els.settingsOverlay) els.settingsOverlay.addEventListener("click", function (e) {
       if (e.target === els.settingsOverlay) toggleSettings(false);
+    });
+    if (els.paramsBtn) els.paramsBtn.addEventListener("click", function () { toggleParams(true); });
+    if (els.paramsClose) els.paramsClose.addEventListener("click", function () { toggleParams(false); });
+    if (els.paramsOverlay) els.paramsOverlay.addEventListener("click", function (e) {
+      if (e.target === els.paramsOverlay) toggleParams(false);
     });
     if (els.addRef) els.addRef.addEventListener("click", function () {
       if (!fs) { setStatus("Node 不可用，无法读取参考图。", "error"); return; }

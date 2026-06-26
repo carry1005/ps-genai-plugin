@@ -9,7 +9,10 @@
       <div class="header">
         <div class="subrow">
           <h1>AI修图插件byCarry</h1>
-          <button id="settingsBtn" class="icon-btn" title="模型与密钥设置">⚙</button>
+          <div class="header-btns">
+            <button id="paramsBtn" class="icon-btn" title="生成参数">🎛</button>
+            <button id="settingsBtn" class="icon-btn" title="模型与密钥设置">⚙</button>
+          </div>
         </div>
       </div>
 
@@ -42,14 +45,22 @@
         </div>
       </div><!-- /settingsOverlay -->
 
-      <div class="section">
-        <p class="sec-title">参数</p>
-        <div id="paramContainer"></div>
-        <label class="lbl">上传最长边(像素, 0=原始)</label>
-        <input id="maxEdge" type="number" value="2048" class="full" />
-        <div class="hidden">
-          <label class="inline"><input type="checkbox" id="fallbackFull" checked /> 无选区时用整张画布</label>
-          <input id="layerPrefix" type="text" value="AI" />
+      <div id="paramsOverlay" class="modal-overlay hidden">
+        <div class="modal-box">
+          <div class="modal-head">
+            <span class="modal-title">生成参数</span>
+            <button id="paramsClose" class="icon-btn" title="关闭">✕</button>
+          </div>
+          <div class="section">
+            <p class="sec-title">参数</p>
+            <div id="paramContainer"></div>
+            <label class="lbl">上传最长边(像素, 0=原始)</label>
+            <input id="maxEdge" type="number" value="2048" class="full" />
+            <div class="hidden">
+              <label class="inline"><input type="checkbox" id="fallbackFull" checked /> 无选区时用整张画布</label>
+              <input id="layerPrefix" type="text" value="AI" />
+            </div>
+          </div>
         </div>
       </div>
 

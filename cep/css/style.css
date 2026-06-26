@@ -80,6 +80,7 @@ input[type="range"] { padding: 0; }
 
 .header { display: flex; flex-direction: column; gap: 4px; }
 .subrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.header-btns { display: flex; gap: 6px; flex: 0 0 auto; }
 .icon-btn { background: transparent; border: 1px solid #5a5a5a; color: #d0d0d0; border-radius: 5px; width: 30px; height: 28px; cursor: pointer; font-size: 15px; flex: 0 0 auto; }
 .icon-btn:hover { background: rgba(255, 255, 255, 0.08); }
 #settingsArea { display: flex; flex-direction: column; gap: 10px; }
