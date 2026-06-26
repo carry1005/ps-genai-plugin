@@ -26,6 +26,7 @@
   var referenceImages = [];
   var pendingConfirm = false;
   var confirmTimer = null;
+  var promptDialogOpen = false;
 
   function $(id) { return document.getElementById(id); }
 
@@ -206,6 +207,15 @@
     });
   }
 
+  function openPromptDialog() {
+    if (promptDialogOpen) return;
+    promptDialogOpen = true;
+    jsxCall("psaiPromptDialog", [els.prompt.value || ""]).then(function (r) {
+      promptDialogOpen = false;
+      if (r && r !== "__CANCEL__") { els.prompt.value = r; resetConfirm(); }
+    }, function () { promptDialogOpen = false; });
+  }
+
   function resetConfirm() {
     pendingConfirm = false;
     if (confirmTimer) { clearTimeout(confirmTimer); confirmTimer = null; }
@@ -318,11 +328,8 @@
     els.fallbackFull.addEventListener("change", function () {
       PSAI.storage.saveSettings({ fallbackFull: !!els.fallbackFull.checked });
     });
-    if (els.cnInput) els.cnInput.addEventListener("click", function () {
-      jsxCall("psaiPromptDialog", [els.prompt.value || ""]).then(function (r) {
-        if (r && r !== "__CANCEL__") els.prompt.value = r;
-      });
-    });
+    if (els.cnInput) els.cnInput.addEventListener("click", openPromptDialog);
+    if (els.prompt) els.prompt.addEventListener("click", openPromptDialog);
     if (els.settingsBtn) els.settingsBtn.addEventListener("click", function () { toggleSettings(); });
     if (els.addRef) els.addRef.addEventListener("click", function () {
       if (!fs) { setStatus("Node 不可用，无法读取参考图。", "error"); return; }
