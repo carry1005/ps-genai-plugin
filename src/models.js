@@ -295,6 +295,17 @@
     base = base.replace(/\/+$/, "");
     const url = base + "/services/aigc/multimodal-generation/generation";
 
+    const params = {
+      n: 1,
+      watermark: false,
+      prompt_extend: options.promptExtend !== "false",
+      negative_prompt: options.negativePrompt || "",
+    };
+    if (options.size && options.size !== "auto") params.size = options.size;
+    if (options.seed !== "" && options.seed != null && !isNaN(Number(options.seed))) {
+      params.seed = Number(options.seed);
+    }
+
     const { res, data } = await apiFetch(
       url,
       {
@@ -303,12 +314,7 @@
         body: JSON.stringify({
           model: model,
           input: { messages: [{ role: "user", content: content }] },
-          parameters: {
-            result_format: "message",
-            n: 1,
-            watermark: false,
-            negative_prompt: options.negativePrompt || "",
-          },
+          parameters: params,
         }),
       },
       signal,
@@ -434,17 +440,51 @@
       fields: [
         {
           key: "model",
-          type: "text",
-          label: "模型名",
+          type: "select",
+          label: "模型",
           default: "qwen-image-2.0-pro",
-          hint: "qwen-image* 走多模态接口；wanx2.1-imageedit / wanx2.0-imageedit 走万相异步接口。",
+          options: [
+            { value: "qwen-image-2.0-pro", label: "qwen-image-2.0-pro（Pro·推荐）" },
+            { value: "qwen-image-2.0-pro-2026-06-22", label: "qwen-image-2.0-pro-2026-06-22" },
+            { value: "qwen-image-2.0-pro-2026-04-22", label: "qwen-image-2.0-pro-2026-04-22" },
+            { value: "qwen-image-2.0-pro-2026-03-03", label: "qwen-image-2.0-pro-2026-03-03" },
+            { value: "qwen-image-2.0", label: "qwen-image-2.0（加速版）" },
+            { value: "qwen-image-2.0-2026-03-03", label: "qwen-image-2.0-2026-03-03" },
+            { value: "qwen-image-edit", label: "qwen-image-edit（图像编辑）" },
+            { value: "qwen-image-max", label: "qwen-image-max（文生图）" },
+            { value: "qwen-image-plus", label: "qwen-image-plus（文生图）" },
+            { value: "qwen-image", label: "qwen-image（文生图）" },
+            { value: "wanx2.1-imageedit", label: "万相 2.1 图像编辑（异步）" },
+            { value: "wanx2.0-imageedit", label: "万相 2.0 图像编辑（异步）" },
+          ],
+          hint: "qwen-image* 走多模态同步接口；wanx* 走万相异步接口。",
         },
         {
-          key: "baseUrl",
-          type: "text",
-          label: "API 基础地址（qwen-image 可选）",
-          default: "",
-          hint: "qwen-image 若用专属网关：填 https://xxx.cn-beijing.maas.aliyuncs.com/api/v1（到 /api/v1 为止）；留空用默认 dashscope。万相不填。",
+          key: "size",
+          type: "select",
+          label: "输出尺寸 / 比例（qwen-image）",
+          default: "2048*2048",
+          options: [
+            { value: "", label: "默认（模型自定）" },
+            { value: "2048*2048", label: "2048×2048 (1:1)" },
+            { value: "2688*1536", label: "2688×1536 (16:9)" },
+            { value: "1536*2688", label: "1536×2688 (9:16)" },
+            { value: "2368*1728", label: "2368×1728 (4:3)" },
+            { value: "1728*2368", label: "1728×2368 (3:4)" },
+            { value: "1664*928", label: "1664×928 (16:9·max/plus)" },
+            { value: "1328*1328", label: "1328×1328 (1:1·max/plus)" },
+          ],
+          hint: "qwen-image-2.0 系列总像素 512²~2048²；max/plus 用 1664*928 等。万相忽略此项。",
+        },
+        {
+          key: "promptExtend",
+          type: "select",
+          label: "智能改写提示词 prompt_extend",
+          default: "true",
+          options: [
+            { value: "true", label: "开（默认·更丰富）" },
+            { value: "false", label: "关（更可控）" },
+          ],
         },
         {
           key: "negativePrompt",
@@ -453,9 +493,22 @@
           default: "",
         },
         {
+          key: "seed",
+          type: "text",
+          label: "随机种子 seed（可选，留空随机）",
+          default: "",
+        },
+        {
+          key: "baseUrl",
+          type: "text",
+          label: "API 基础地址（专属网关·可选）",
+          default: "",
+          hint: "北京：https://{WorkspaceId}.cn-beijing.maas.aliyuncs.com/api/v1；留空用默认 dashscope。万相不填。",
+        },
+        {
           key: "function",
           type: "select",
-          label: "编辑功能",
+          label: "编辑功能（仅万相 wanx）",
           default: "description_edit",
           options: [
             { value: "description_edit", label: "指令编辑（按提示词改）" },
